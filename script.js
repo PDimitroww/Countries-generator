@@ -1,8 +1,11 @@
 'use strict';
 
 const btn = document.querySelector('.btn-country');
-const btn1 = document.querySelector('.btn-clear');
+const btnClear = document.querySelector('.btn-clear');
 const countriesContainer = document.querySelector('.countries');
+const search = document.querySelector('#searchForm');
+const nav = document.querySelector('.header');
+const footer = document.querySelector('footer');
 
 // Rendering country data
 
@@ -40,33 +43,33 @@ const getJSON = function (url, errorMsg = 'Something went wrong') {
 
 ////////////////////////////////////////////////////////////////
 
-const getCountryData = function (country) {
-  const request = new XMLHttpRequest();
-  request.open('GET', `https://restcountries.com/v2/name/${country}`);
-  request.send();
+// const getCountryData = function (country) {
+//   const request = new XMLHttpRequest();
+//   request.open('GET', `https://restcountries.com/v2/name/${country}`);
+//   request.send();
 
-  request.addEventListener('load', function () {
-    const [data] = JSON.parse(this.responseText);
-    console.log(data);
+//   request.addEventListener('load', function () {
+//     const [data] = JSON.parse(this.responseText);
+//     console.log(data);
 
-    const html = `
-  <article class="country">
-   <img class="country__img" src="${data.flag}" />
-   <div class="country__data">
-     <h3 class="country__name">${data.name}</h3>
-     <h4 class="country__region">${data.region}</h4>
-     <p class="country__row"><span>👫</span>${(
-       +data.population / 1000000
-     ).toFixed(1)}</p>
-     <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
-     <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-   </div>
-</article>
-`;
-    countriesContainer.insertAdjacentHTML('beforeend', html);
-    countriesContainer.style.opacity = 1;
-  });
-};
+//     const html = `
+//   <article class="country">
+//    <img class="country__img" src="${data.flag}" />
+//    <div class="country__data">
+//      <h3 class="country__name">${data.name}</h3>
+//      <h4 class="country__region">${data.region}</h4>
+//      <p class="country__row"><span>👫</span>${(
+//        +data.population / 1000000
+//      ).toFixed(1)}</p>
+//      <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
+//      <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+//    </div>
+// </article>
+// `;
+//     countriesContainer.insertAdjacentHTML('beforeend', html);
+//     countriesContainer.style.opacity = 1;
+//   });
+// };
 
 // AJAX calls
 
@@ -76,37 +79,82 @@ const getCountryData = function (country) {
 
 //////////////////////////////////////////////////////////////////
 
-const getCountryAndNeighbour = function (country) {
-  //Ajax call country 1
-  const request = new XMLHttpRequest();
-  request.open('GET', `https://restcountries.com/v2/name/${country}`);
-  request.send();
+//Adding functionality to the search input
 
-  request.addEventListener('load', function () {
-    const [data] = JSON.parse(this.responseText);
-    // console.log(data);
+search.addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const searchTerm = search.elements.query.value;
+  const res = await axios.get(
+    `https://restcountries.com/v2/name/${searchTerm}`
+  );
 
-    //render country 1
-    renderCountry(data);
+  const html1 = `
+  <article class="country">
+   <img class="country__img" src="${res.data[0].flag}" />
+   <div class="country__data">
+     <h3 class="country__name">${res.data[0].name}</h3>
+     <h4 class="country__region">${res.data[0].region}</h4>
+     <p class="country__row"><span>👫</span>${(
+       +res.data[0].population / 1000000
+     ).toFixed(1)}</p>
+     <p class="country__row"><span>🗣️</span>${res.data[0].languages[0].name}</p>
+     <p class="country__row"><span>💰</span>${
+       res.data[0].currencies[0].name
+     }</p>
+   </div>
+</article>
+`;
 
-    //Get neighbour country 2
-    const [neighbour] = data.borders;
+  countriesContainer.insertAdjacentHTML('beforeend', html1);
+  countriesContainer.style.opacity = 1;
 
-    if (!neighbour) return;
+  search.elements.query.value = '';
+});
 
-    //AJAX call country 2
-    const request2 = new XMLHttpRequest();
-    request2.open('GET', `https://restcountries.com/v2/alpha/${neighbour}`);
-    request2.send();
+//Making the nav sticky
 
-    request2.addEventListener('load', function () {
-      const data2 = JSON.parse(this.responseText);
-      // console.log(data2);
+function fixedNav() {
+  if (window.pageYOffset >= 150) {
+    nav.classList.add('fixed');
+  } else {
+    nav.classList.remove('fixed');
+  }
+}
 
-      renderCountry(data2, 'neighbour');
-    });
-  });
-};
+window.addEventListener('scroll', fixedNav);
+
+//////////////////////////////////////////////////////////////////
+// const getCountryAndNeighbour = function (country) {
+//   //Ajax call country 1
+//   const request = new XMLHttpRequest();
+//   request.open('GET', `https://restcountries.com/v2/name/${country}`);
+//   request.send();
+
+//   request.addEventListener('load', function () {
+//     const [data] = JSON.parse(this.responseText);
+//     // console.log(data);
+
+//     //render country 1
+//     renderCountry(data);
+
+//     //Get neighbour country 2
+//     const [neighbour] = data.borders;
+
+//     if (!neighbour) return;
+
+//     //AJAX call country 2
+//     const request2 = new XMLHttpRequest();
+//     request2.open('GET', `https://restcountries.com/v2/alpha/${neighbour}`);
+//     request2.send();
+
+//     request2.addEventListener('load', function () {
+//       const data2 = JSON.parse(this.responseText);
+//       // console.log(data2);
+
+//       renderCountry(data2, 'neighbour');
+//     });
+//   });
+// };
 
 // AJAX calls
 
@@ -125,6 +173,7 @@ const getPosition = function () {
   });
 };
 
+//API call to get your position
 const whereAmI = function () {
   getPosition()
     .then(pos => {
@@ -139,8 +188,8 @@ const whereAmI = function () {
       return response.json();
     })
     .then(data => {
-      console.log(data);
-      console.log(`You are in ${data.city},${data.countryName}`);
+      // console.log(data);
+      // console.log(`You are in ${data.city},${data.countryName}`);
 
       return fetch(`https://restcountries.com/v2/name/${data.countryName}`);
     })
@@ -158,7 +207,14 @@ const whereAmI = function () {
     });
 };
 
+//Buttons eventhandlers
+
+//Btn to Show you current position
 btn.addEventListener('click', whereAmI);
-btn1.addEventListener('click', function () {
-  document.querySelector('.country').remove();
+
+//Btn to remove the result 1 by 1
+btnClear.addEventListener('click', function () {
+  const div = document.querySelectorAll('.country');
+  const lastEl = div[div.length - 1];
+  lastEl.remove();
 });

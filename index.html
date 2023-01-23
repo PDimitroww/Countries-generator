@@ -9,14 +9,25 @@
 
     <link rel="stylesheet" href="style.css" />
     <script defer src="script.js"></script>
-    <title>Asynchronous JavaScript</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <title>Location Generator</title>
   </head>
+  <header class="wrapper">
+    <div class="header">
+      <h1>Location Generator</h1>
+      <form id="searchForm">
+        <input type="text" placeholder="Countries selector" name="query" />
+        <button class="search">search</button>
+      </form>
+    </div>
+  </header>
   <body>
+    <p class="heading">
+      Hello there! You want to know your current location? Or you are just
+      curious to know some cool info about different countries?<br />
+      Then i believe that's the right spot for you!
+    </p>
     <main class="container">
-      <div class="header">
-        <p>Location Generator</p>
-      </div>
-      <button class="btn-clear">Clear Results</button>
       <div class="countries">
         <!--
         <article class="country">
@@ -31,9 +42,13 @@
         </article>
         -->
       </div>
-      <button class="btn-country">Where am I?</button>
+      <div class="Btns">
+        <button class="btn btn-country">Where am I?</button>
+        <button class="btn btn-clear">Clear Results</button>
+      </div>
 
       <div class="images"></div>
     </main>
   </body>
+  <footer><p>Copyright by P.Dimitorw &copy;</p></footer>
 </html>
